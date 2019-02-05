@@ -28,7 +28,7 @@ public class UserMealsUtil {
         mealList.forEach(
                 u -> amountOfCaloriesPerDay.merge(u.getDateTime().toLocalDate(),
                         u.getCalories(),
-                        (oldValue, newValue) -> oldValue + newValue)
+                        Integer::sum)
         );
         List<UserMealWithExceed> result = new ArrayList<>();
         mealList.forEach(
