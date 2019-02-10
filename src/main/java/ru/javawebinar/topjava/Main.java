@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava;
 
+import ru.javawebinar.topjava.util.MealsUtil;
+
 /**
  * @see <a href="http://topjava.herokuapp.com">Demo</a>
  * @see <a href="https://github.com/JavaOPs/topjava">Initial project</a>
