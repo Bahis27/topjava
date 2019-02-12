@@ -1,5 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
     <title>Meals</title>
@@ -29,25 +29,49 @@
 <br>
 <table>
     <tr>
+        <th>ID</th>
         <th>Date</th>
         <th>Description</th>
         <th>Calories</th>
+        <th colspan="2">Action</th>
     </tr>
     <jsp:useBean id="mealtolist" scope="request" type="java.util.List"/>
     <jsp:useBean id="formatter" scope="request" type="java.time.format.DateTimeFormatter"/>
 
     <c:forEach var="mealto" items="${mealtolist}">
-        <c:if test="${mealto.isExcess()}">
-            <tr style="background-color: crimson">
+        <c:if test="${mealto.excess}">
+            <tr style="color: crimson">
         </c:if>
-        <c:if test="${!mealto.isExcess()}">
-            <tr style="background-color: green">
+        <c:if test="${!mealto.excess}">
+            <tr style="color: green">
         </c:if>
-        <td>${mealto.getDateTime().format(formatter)}</td>
-        <td>${mealto.getDescription()}</td>
-        <td>${mealto.getCalories()}</td>
+        <td>${mealto.id}</td>
+        <td>${mealto.dateTime.format(formatter)}</td>
+        <td>${mealto.description}</td>
+        <td>${mealto.calories}</td>
+        <td>
+            <a href="${pageContext.request.contextPath}/meals?action=edit&mealtoid=${mealto.id}">edit</a>
+        </td>
+        <td>
+            <a href="${pageContext.request.contextPath}/meals?action=delete&mealtoid=${mealto.id}">delete</a>
+        </td>
         </tr>
     </c:forEach>
 </table>
+
+<h3>Add new entry here:</h3>
+<table border="2">
+    <tr>
+        <td>
+            <form method="post" action="${pageContext.request.contextPath}/meals">
+                Date: <label><input type="datetime-local" name="dateTime"></label><br>
+                Description: <label><input type="text" name="description"></label><br>
+                Calories: <label><input type="number" name="calories"></label><br>
+                <input type="submit" value="Update">
+            </form>
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>
