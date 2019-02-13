@@ -17,7 +17,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+    private final DateTimeFormatter FORMATTER_TO_EDIT_PAGE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
     private int caloriesPerDay = MealsUtil.getCaloriesPerDay();
     private MealDao mealDao;
 
@@ -31,7 +32,6 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("redirect to meals, get");
         request.setCharacterEncoding("UTF-8");
-        request.setAttribute("formatter", FORMATTER);
         String s = request.getParameter("action");
         if (s != null) {
             switch (s) {
@@ -41,12 +41,14 @@ public class MealServlet extends HttpServlet {
                 case "edit":
                     int id = Integer.parseInt(request.getParameter("mealtoid"));
                     request.setAttribute("meal", mealDao.getById(id));
+                    request.setAttribute("formatter", FORMATTER_TO_EDIT_PAGE);
                     request.getRequestDispatcher("/mealEdit.jsp").forward(request, response);
                     return;
                 default:
                     break;
             }
         }
+        request.setAttribute("formatter", FORMATTER);
         request.setAttribute("mealtolist", MealsUtil.getAllMealsTo(mealDao.getList(), caloriesPerDay));
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
@@ -61,11 +63,11 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(request.getParameter("calories"));
         int id = 0;
         if (idString == null) {
-            Meal meal = new Meal(id, LocalDateTime.parse(date, FORMATTER), description, calories);
+            Meal meal = new Meal(id, LocalDateTime.parse(date), description, calories);
             mealDao.add(meal);
         } else {
             id = Integer.parseInt(idString);
-            Meal meal = new Meal(id, LocalDateTime.parse(date, FORMATTER), description, calories);
+            Meal meal = new Meal(id, LocalDateTime.parse(date), description, calories);
             mealDao.update(id, meal);
         }
         response.sendRedirect("/topjava/meals");
