@@ -29,7 +29,6 @@
 <br>
 <table>
     <tr>
-        <th>ID</th>
         <th>Date</th>
         <th>Description</th>
         <th>Calories</th>
@@ -39,13 +38,14 @@
     <jsp:useBean id="formatter" scope="request" type="java.time.format.DateTimeFormatter"/>
 
     <c:forEach var="mealto" items="${mealtolist}">
-        <c:if test="${mealto.excess}">
-            <tr style="color: crimson">
-        </c:if>
-        <c:if test="${!mealto.excess}">
-            <tr style="color: green">
-        </c:if>
-        <td>${mealto.id}</td>
+        <c:choose>
+            <c:when test="${mealto.excess}">
+                <tr style="color: crimson">
+            </c:when>
+            <c:otherwise>
+                <tr style="color: green">
+            </c:otherwise>
+        </c:choose>
         <td>${mealto.dateTime.format(formatter)}</td>
         <td>${mealto.description}</td>
         <td>${mealto.calories}</td>
