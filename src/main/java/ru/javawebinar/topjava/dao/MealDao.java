@@ -1,7 +1,7 @@
 package ru.javawebinar.topjava.dao;
 
+import ru.javawebinar.topjava.data.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.ServiceMeal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,41 +9,34 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MealDao {
-    private Map<Integer, Meal> connection;
-    private static AtomicInteger idCounter;
+    private Map<Integer, Meal> testData;
+    private AtomicInteger idCounter;
 
     public MealDao() {
-        this.connection = new ServiceMeal().getConnection();
-        idCounter = new AtomicInteger(this.connection.size());
+        this.testData = new MealTestData().getData();
+        idCounter = new AtomicInteger(this.testData.size());
     }
 
-    public void addMeal(Meal meal) {
-        connection.put(idCounter.incrementAndGet(), meal);
+    public void add(Meal meal) {
+        int id = idCounter.incrementAndGet();
+        meal.setId(id);
+        testData.put(id, meal);
     }
 
-    public void deleteMeal(int mealId) {
-        connection.remove(mealId);
+    public void delete(int mealId) {
+        testData.remove(mealId);
     }
 
-    public void updateMeal(int mealId, Meal meal) {
-        connection.replace(mealId, meal);
+    public void update(int mealId, Meal meal) {
+        testData.replace(mealId, meal);
     }
 
-    public List<Meal> getMeals() {
-        return new ArrayList<>(connection.values());
+    public List<Meal> getList() {
+        return new ArrayList<>(testData.values());
     }
 
-    public Meal getMealById(int mealId) {
-        Meal meal = connection.get(mealId);
+    public Meal getById(int mealId) {
+        Meal meal = testData.get(mealId);
         return new Meal(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories());
     }
-
-    public void clrearResources() {
-        connection = null;
-    }
-
-    public int getCount() {
-        return connection.size();
-    }
-
 }

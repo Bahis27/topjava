@@ -7,11 +7,11 @@ import java.time.Month;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemoryDb {
+public class MealTestData {
 
     private Map<Integer, Meal> meals;
 
-    public MemoryDb() {
+    public MealTestData() {
         meals = new ConcurrentHashMap<>();
         meals.put(1, new Meal(1, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
         meals.put(2, new Meal(2, LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
@@ -21,7 +21,7 @@ public class MemoryDb {
         meals.put(6, new Meal(6, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
     }
 
-    public Map<Integer, Meal> connectToDb() {
+    public Map<Integer, Meal> getData() {
         return meals;
     }
 
