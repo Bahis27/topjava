@@ -28,7 +28,6 @@
 <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
 <jsp:useBean id="formatter" scope="request" type="java.time.format.DateTimeFormatter"/>
 
-<h3>ID: ${meal.id}</h3>
 <table border="2">
     <tr>
         <td>

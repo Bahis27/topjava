@@ -67,7 +67,7 @@
                 Date: <label><input type="datetime-local" name="dateTime"></label><br>
                 Description: <label><input type="text" name="description"></label><br>
                 Calories: <label><input type="number" name="calories"></label><br>
-                <input type="submit" value="Update">
+                <input type="submit" value="Add">
             </form>
         </td>
     </tr>
