@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +34,7 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
         log.info("save {}", user);
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
+            user.setCaloriesPerDay(SecurityUtil.authUserCaloriesPerDay());
             repository.put(user.getId(), user);
             return user;
         }

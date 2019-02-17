@@ -20,7 +20,7 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <h2>Meals</h2>
-    <a href="meals?action=create">Add Meal</a>
+    <a href="meals?action=create&userid=${meal.userId}">Add Meal</a>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -43,11 +43,45 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
-                <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
+                <td><a href="meals?action=update&id=${meal.id}&userid=${meal.userId}">Update</a></td>
+                <td><a href="meals?action=delete&id=${meal.id}&userid=${meal.userId}">Delete</a></td>
             </tr>
         </c:forEach>
     </table>
+</section>
+<section>
+    <form method="get" action="meals">
+        <table border="0" cellpadding="8" cellspacing="0">
+            <tr>
+                <td>От даты</td>
+                <td>До даты</td>
+            </tr>
+            <tr>
+                <td><label>
+                    <input type="date" name="dateafter">
+                </label></td>
+                <td><label>
+                    <input type="date" name="datebefore">
+                </label></td>
+            </tr>
+            <tr>
+                <td>От времени</td>
+                <td>До времени</td>
+            </tr>
+            <tr>
+                <td><label>
+                    <input type="time" name="timeafter">
+                </label></td>
+                <td><label>
+                    <input type="time" name="timebefore">
+                </label></td>
+            </tr>
+            <tr>
+                <td><button type="submit">Отфильтровать</button></td>
+                <td><button type="submit">Отменить</button></td>
+            </tr>
+        </table>
+    </form>
 </section>
 </body>
 </html>
