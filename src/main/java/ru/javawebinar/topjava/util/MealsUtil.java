@@ -25,6 +25,22 @@ public class MealsUtil {
 
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
 
+    public static LocalDate getMinDate(){
+        return Collections.min(MEALS, Comparator.comparing(Meal::getDate)).getDate().minusDays(1);
+    }
+
+    public static LocalDate getMaxDate(){
+        return Collections.max(MEALS, Comparator.comparing(Meal::getDate)).getDate().plusDays(1);
+    }
+
+    public static LocalTime getMinTime() {
+        return LocalTime.MIN;
+    }
+
+    public static LocalTime getMaxTime() {
+        return LocalTime.MAX;
+    }
+
     public static List<MealTo> getWithExcess(Collection<Meal> meals, int caloriesPerDay) {
         return getFilteredWithExcess(meals, caloriesPerDay, meal -> true);
     }

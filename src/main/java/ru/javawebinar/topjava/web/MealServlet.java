@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -35,21 +37,35 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        String id = request.getParameter("id");
 
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")),
-                SecurityUtil.getAuthUserId());
+        String sStartDate = request.getParameter("startdate");
+        String sEndDate = request.getParameter("enddate");
+        String sStartTime = request.getParameter("starttime");
+        String sEndTime = request.getParameter("endtime");
 
-        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        if (meal.isNew()) {
-            controller.create(meal, SecurityUtil.getAuthUserId());
+        if (sStartDate != null || sEndDate != null || sStartTime != null || sEndTime != null) {
+            LocalDate startDate = (sStartDate == null) ? MealsUtil.getMinDate() : LocalDate.parse(sStartDate);
+            LocalDate endDate = (sEndDate == null) ? MealsUtil.getMaxDate() : LocalDate.parse(sEndDate);
+            LocalTime startTime = (sStartTime == null) ? MealsUtil.getMinTime() : LocalTime.parse(sStartTime);
+            LocalTime endTime = (sEndTime == null) ? MealsUtil.getMaxTime() : LocalTime.parse(sEndTime);
+
         } else {
-            controller.update(meal, SecurityUtil.getAuthUserId());
+            String id = request.getParameter("id");
+
+            Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                    LocalDateTime.parse(request.getParameter("dateTime")),
+                    request.getParameter("description"),
+                    Integer.parseInt(request.getParameter("calories")),
+                    SecurityUtil.getAuthUserId());
+
+            log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
+            if (meal.isNew()) {
+                controller.create(meal, SecurityUtil.getAuthUserId());
+            } else {
+                controller.update(meal, SecurityUtil.getAuthUserId());
+            }
+            response.sendRedirect("meals");
         }
-        response.sendRedirect("meals");
     }
 
     @Override

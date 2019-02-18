@@ -50,7 +50,7 @@
     </table>
 </section>
 <section>
-    <form method="get" action="meals">
+    <form method="post" action="meals">
         <table border="0" cellpadding="8" cellspacing="0">
             <tr>
                 <td>От даты</td>
