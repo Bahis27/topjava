@@ -20,7 +20,7 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <h2>Meals</h2>
-    <a href="meals?action=create&userid=${meal.userId}">Add Meal</a>
+    <a href="meals?action=create">Add Meal</a>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -43,8 +43,8 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="meals?action=update&id=${meal.id}&userid=${meal.userId}">Update</a></td>
-                <td><a href="meals?action=delete&id=${meal.id}&userid=${meal.userId}">Delete</a></td>
+                <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
+                <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
             </tr>
         </c:forEach>
     </table>
@@ -58,10 +58,10 @@
             </tr>
             <tr>
                 <td><label>
-                    <input type="date" name="dateafter">
+                    <input type="date" name="startdate">
                 </label></td>
                 <td><label>
-                    <input type="date" name="datebefore">
+                    <input type="date" name="enddate">
                 </label></td>
             </tr>
             <tr>
@@ -70,10 +70,10 @@
             </tr>
             <tr>
                 <td><label>
-                    <input type="time" name="timeafter">
+                    <input type="time" name="starttime">
                 </label></td>
                 <td><label>
-                    <input type="time" name="timebefore">
+                    <input type="time" name="endtime">
                 </label></td>
             </tr>
             <tr>

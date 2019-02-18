@@ -13,32 +13,36 @@ import java.util.List;
 public class MealRestController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Autowired
     private MealService service;
 
-    public List<Meal> getAll() {
+    @Autowired
+    public MealRestController(MealService service) {
+        this.service = service;
+    }
+
+    public List<Meal> getAll(int authUserId) {
         log.info("getAll");
-        return service.getAll();
+        return service.getAll(authUserId);
     }
 
-    public Meal get(int id, int userId) {
-        log.info("get {}", id, userId);
-        return service.get(id, userId);
+    public Meal get(int id, int authUserId) {
+        log.info("get {}", id, authUserId);
+        return service.get(id, authUserId);
     }
 
-    public Meal create(Meal meal, int userId) {
-        log.info("create {}", meal, userId);
-        return service.create(meal, userId);
+    public Meal create(Meal meal, int authUserId) {
+        log.info("create {}", meal, authUserId);
+        return service.create(meal, authUserId);
     }
 
-    public boolean delete(int id, int userId) {
-        log.info("delete {}", id, userId);
-        return service.delete(id, userId);
+    public boolean delete(int id, int authUserId) {
+        log.info("delete {}", id, authUserId);
+        return service.delete(id, authUserId);
     }
 
-    public Meal update(Meal meal, int id, int userId) {
-        log.info("update {}", meal, id, userId);
-        return service.update(meal, userId);
+    public Meal update(Meal meal, int id, int authUserId) {
+        log.info("update {}", meal, id, authUserId);
+        return service.update(meal, authUserId);
     }
 
 }

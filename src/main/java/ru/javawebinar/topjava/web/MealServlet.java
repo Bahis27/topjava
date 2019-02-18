@@ -21,7 +21,6 @@ import java.util.Objects;
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    //private MealRepository repository;
     private ConfigurableApplicationContext applicationContext;
     private MealRestController controller;
 
@@ -29,7 +28,6 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        //repository = new InMemoryMealRepositoryImpl();
         applicationContext = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         controller = applicationContext.getBean(MealRestController.class);
     }
@@ -38,20 +36,18 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
-        int userId = Integer.parseInt(request.getParameter("userid"));
 
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")),
-                userId);
+                SecurityUtil.getAuthUserId());
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        //repository.save(meal, meal.getUserId());
         if (meal.isNew()) {
-            controller.create(meal, userId);
+            controller.create(meal, SecurityUtil.getAuthUserId());
         } else {
-            controller.update(meal, Integer.parseInt(id), userId);
+            controller.update(meal, Integer.parseInt(id), SecurityUtil.getAuthUserId());
         }
         response.sendRedirect("meals");
     }
@@ -59,22 +55,19 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        String userId = request.getParameter("userid");
 
-        switch (action == null || userId == null ? "all" : action) {
+        switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
                 log.info("Delete {}", id);
-                //repository.delete(id, Integer.parseInt(userId));
-                controller.delete(id, Integer.parseInt(userId));
+                controller.delete(id, SecurityUtil.getAuthUserId());
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.getAuthUserId()) :
-                        //repository.get(getId(request), Integer.parseInt(userId));
-                        controller.get(getId(request), Integer.parseInt(userId));
+                        controller.get(getId(request), SecurityUtil.getAuthUserId());
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
@@ -84,8 +77,7 @@ public class MealServlet extends HttpServlet {
             default:
                 log.info("getAll");
                 request.setAttribute("meals",
-                        //MealsUtil.getWithExcess(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
-                        MealsUtil.getWithExcess(controller.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                        MealsUtil.getWithExcess(controller.getAll(SecurityUtil.getAuthUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
