@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,6 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
     private final Meal DEFAULT_MEAL = new Meal(LocalDateTime.now(), "not exist meal", 0, 0);
-    private UserRepository userRepository = new InMemoryUserRepositoryImpl();
 
     {
         MealsUtil.MEALS.forEach(meal -> save(meal, meal.getUserId()));
@@ -40,7 +38,7 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int id, int authUserId) {
-        if (authUserId != get(id, authUserId).getUserId())
+        if ((get(id, authUserId) == null) || authUserId != (get(id, authUserId).getUserId()))
             return false;
         return null != repository.remove(id);
     }

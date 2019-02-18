@@ -40,8 +40,8 @@ public class MealRestController {
         return service.delete(id, authUserId);
     }
 
-    public Meal update(Meal meal, int id, int authUserId) {
-        log.info("update {}", meal, id, authUserId);
+    public Meal update(Meal meal, int authUserId) {
+        log.info("update {}", meal, authUserId);
         return service.update(meal, authUserId);
     }
 
