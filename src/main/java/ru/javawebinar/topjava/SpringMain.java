@@ -19,7 +19,7 @@ public class SpringMain {
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
             User u1 = adminUserController.create(new User(null, "admin", "admin@gmail.com", "apass", Role.ROLE_ADMIN));
             User u2 = adminUserController.create(new User(null, "User", "user1@gmail.com", "u1pass", Role.ROLE_USER));
-
+            adminUserController.getAll().forEach(System.out::println);
             System.out.println("==================================================================================================================");
             System.out.println(adminUserController.getByMail("user1@gmail.com"));
 

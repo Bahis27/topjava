@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class InMemoryUserRepositoryImpl implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepositoryImpl.class);
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
-    private AtomicInteger counter = new AtomicInteger(4);
+    private AtomicInteger counter = new AtomicInteger(6);
     private static final User NOT_EXIST_USER = new User(0, "not exist", "not exist", "not exist", Role.ROLE_USER);
 
     public InMemoryUserRepositoryImpl() {
@@ -27,6 +27,8 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
         repository.put(2, new User(2, "Vasya", "Vasya@gmail.com", "vpass", Role.ROLE_USER));
         repository.put(3, new User(3, "OneMoreUser", "OMU@gmail.com", "opass", Role.ROLE_USER));
         repository.put(4, new User(4, "User", "User@gmail.com", "upass", Role.ROLE_USER));
+        repository.put(5, new User(5, "anna", "anna@gmail.com", "apass", Role.ROLE_USER, Role.ROLE_ADMIN));
+        repository.put(6, new User(6, "OneMoreUser", "OneMU@gmail.com", "omupass", Role.ROLE_USER));
     }
 
     @Override

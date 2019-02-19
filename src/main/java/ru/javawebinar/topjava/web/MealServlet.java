@@ -43,12 +43,31 @@ public class MealServlet extends HttpServlet {
         String sStartTime = request.getParameter("starttime");
         String sEndTime = request.getParameter("endtime");
 
-        if (sStartDate != null || sEndDate != null || sStartTime != null || sEndTime != null) {
-            LocalDate startDate = (sStartDate == null) ? MealsUtil.getMinDate() : LocalDate.parse(sStartDate);
-            LocalDate endDate = (sEndDate == null) ? MealsUtil.getMaxDate() : LocalDate.parse(sEndDate);
-            LocalTime startTime = (sStartTime == null) ? MealsUtil.getMinTime() : LocalTime.parse(sStartTime);
-            LocalTime endTime = (sEndTime == null) ? MealsUtil.getMaxTime() : LocalTime.parse(sEndTime);
+        //one parameter check is enough
+        if (sStartDate != null) {
+            LocalTime startTime = (sStartTime.length() == 0) ? MealsUtil.getMinTime() : LocalTime.parse(sStartTime);
+            LocalTime endTime = (sEndTime.length() == 0) ? MealsUtil.getMaxTime() : LocalTime.parse(sEndTime);
+            if (startTime.isAfter(endTime))
+                endTime = LocalTime.MAX;
 
+            if (sStartDate.length() == 0 && sEndDate.length() == 0){
+                log.info("getAllFilteredByTime");
+                request.setAttribute("meals",
+                        MealsUtil.getFilteredWithExcess(controller.getAll(SecurityUtil.getAuthUserId()),
+                                MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime));
+            } else {
+                LocalDate startDate = (sStartDate.length() == 0) ? MealsUtil.getMinDate() : LocalDate.parse(sStartDate);
+                LocalDate endDate = (sEndDate.length() == 0) ? MealsUtil.getMaxDate() : LocalDate.parse(sEndDate);
+                if (startDate.isAfter(endDate))
+                    endDate = LocalDate.now();
+                log.info("getAllFiltered");
+                request.setAttribute("meals",
+                        MealsUtil.getFilteredWithExcess(controller.getAll(SecurityUtil.getAuthUserId()),
+                                MealsUtil.DEFAULT_CALORIES_PER_DAY,
+                                LocalDateTime.of(startDate, startTime),
+                                LocalDateTime.of(endDate, endTime)));
+            }
+            request.getRequestDispatcher("/meals.jsp").forward(request, response);
         } else {
             String id = request.getParameter("id");
 

@@ -25,11 +25,11 @@ public class MealsUtil {
 
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
 
-    public static LocalDate getMinDate(){
+    public static LocalDate getMinDate() {
         return Collections.min(MEALS, Comparator.comparing(Meal::getDate)).getDate().minusDays(1);
     }
 
-    public static LocalDate getMaxDate(){
+    public static LocalDate getMaxDate() {
         return Collections.max(MEALS, Comparator.comparing(Meal::getDate)).getDate().plusDays(1);
     }
 
@@ -41,12 +41,17 @@ public class MealsUtil {
         return LocalTime.MAX;
     }
 
+    //дергается из сервлета
     public static List<MealTo> getWithExcess(Collection<Meal> meals, int caloriesPerDay) {
         return getFilteredWithExcess(meals, caloriesPerDay, meal -> true);
     }
 
     public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
         return getFilteredWithExcess(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getTime(), startTime, endTime));
+    }
+
+    public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return getFilteredWithExcess(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getDateTime(), startDateTime, endDateTime));
     }
 
     private static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
@@ -65,4 +70,5 @@ public class MealsUtil {
     public static MealTo createWithExcess(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess, meal.getUserId());
     }
+
 }
