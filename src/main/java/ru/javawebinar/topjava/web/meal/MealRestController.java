@@ -9,6 +9,9 @@ import ru.javawebinar.topjava.service.MealService;
 
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+
 @Controller
 public class MealRestController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -32,6 +35,7 @@ public class MealRestController {
 
     public Meal create(Meal meal, int authUserId) {
         log.info("create {}", meal, authUserId);
+        checkNew(meal);
         return service.create(meal, authUserId);
     }
 
@@ -40,8 +44,9 @@ public class MealRestController {
         return service.delete(id, authUserId);
     }
 
-    public Meal update(Meal meal, int authUserId) {
-        log.info("update {}", meal, authUserId);
+    public Meal update(Meal meal, int authUserId, int id) {
+        log.info("update {}", meal, authUserId, id);
+        assureIdConsistent(meal, id);
         return service.update(meal, authUserId);
     }
 

@@ -29,8 +29,8 @@ public class SpringMain {
             //System.out.println(mealRestController.get(2, 2));
             System.out.println(mealRestController.delete(2, 1));
             //System.out.println(mealRestController.delete(2, 2));
-            System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 1), 1));
-            System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 2), 1));
+            System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 1), 1, 1));
+            //System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 2), 1, 2));
         }
     }
 }

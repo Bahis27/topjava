@@ -50,7 +50,7 @@
     </table>
 </section>
 <section>
-    <form method="post" action="meals">
+    <form method="post" action="meals?action=filter">
         <table border="0" cellpadding="8" cellspacing="0">
             <tr>
                 <td>От даты</td>
@@ -78,7 +78,7 @@
             </tr>
             <tr>
                 <td><button type="submit">Отфильтровать</button></td>
-                <td><button type="submit">Отменить</button></td>
+                <td><button type="button" onclick="location.href='meals'">Cancel</button></td>
             </tr>
         </table>
     </form>
