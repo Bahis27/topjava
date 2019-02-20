@@ -19,8 +19,7 @@ public class UserServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action != null && action.equals("register")) {
             SecurityUtil.setAuthUserId(Integer.parseInt(request.getParameter("userid")));
-            response.sendRedirect("meals");
-        } else
-            request.getRequestDispatcher("/users.jsp").forward(request, response);
+        }
+        response.sendRedirect("meals");
     }
 }

@@ -14,13 +14,29 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 public class MealsUtil {
-    public static final List<Meal> MEALS = Arrays.asList(
-            new Meal(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500, 1),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000, 1),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500, 1),
-            new Meal(LocalDateTime.of(2016, Month.MAY, 31, 10, 0), "Завтрак", 1000, 2),
-            new Meal(LocalDateTime.of(2016, Month.MAY, 31, 13, 0), "Обед", 500, 2),
-            new Meal(LocalDateTime.of(2016, Month.MAY, 31, 20, 0), "Ужин", 510, 2)
+    public static final List<Meal> MEALS1 = Arrays.asList(
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 10, 0, 0), "Завтрак", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 10, 13, 20), "Обед", 1000),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 10, 20, 0), "Ужин", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 11, 10, 0), "Завтрак", 1000),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 11, 13, 10), "Обед", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 11, 20, 0), "Ужин", 510),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 12, 10, 0), "Завтрак", 1000),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 12, 13, 0), "Обед", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 12, 23, 59), "Ужин", 300)
+    );
+
+    public static final List<Meal> MEALS2 = Arrays.asList(
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 10, 10, 0), "Завтрак", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 10, 13, 0), "Обед", 1000),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 10, 20, 0), "Ужин", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 11, 10, 0), "Завтрак", 1000),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 11, 13, 0), "Обед", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 11, 20, 0), "Ужин", 510),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 12, 10, 0), "Завтрак", 1000),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 12, 13, 0), "Обед", 500),
+            new Meal(LocalDateTime.of(2018, Month.FEBRUARY, 12, 20, 0), "Ужин", 300)
+
     );
 
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
@@ -30,12 +46,8 @@ public class MealsUtil {
         return getFilteredWithExcess(meals, caloriesPerDay, meal -> true);
     }
 
-    public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
-        return getFilteredWithExcess(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getTime(), startTime, endTime));
-    }
-
-    public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, LocalDate startDate, LocalDate endDate) {
-        return getFilteredWithExcess(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate));
+    public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return getFilteredWithExcess(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getDate(), meal.getTime(), startDate, endDate, startTime, endTime));
     }
 
     private static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
@@ -52,12 +64,6 @@ public class MealsUtil {
     }
 
     public static MealTo createWithExcess(Meal meal, boolean excess) {
-        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess, meal.getUserId());
-    }
-
-    public static List<Meal> convetToMeal(List<MealTo> list) {
-        return list.stream()
-                .map(mealTo -> new Meal(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), mealTo.getUserId()))
-                .collect(Collectors.toList());
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }

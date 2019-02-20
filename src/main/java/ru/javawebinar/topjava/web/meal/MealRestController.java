@@ -28,9 +28,9 @@ public class MealRestController {
         this.service = service;
     }
 
-    public List<Meal> getAll() {
+    public List<MealTo> getAll() {
         log.info("getAll");
-        return service.getAll(SecurityUtil.getAuthUserId());
+        return MealsUtil.getWithExcess(service.getAll(SecurityUtil.getAuthUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
     public List<MealTo> getAllFiltered(String sStartDate, String sEndDate, String sStartTime, String sEndTime) {
@@ -43,11 +43,7 @@ public class MealRestController {
             endTime = LocalTime.MAX;
         if (startDate.isAfter(endDate))
             endDate = LocalDate.MAX;
-
-        List<MealTo> list = MealsUtil.getFilteredWithExcess(getAll(),
-                MealsUtil.DEFAULT_CALORIES_PER_DAY, startDate, endDate);
-        return MealsUtil.getFilteredWithExcess(MealsUtil.convetToMeal(list), MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime);
-
+        return MealsUtil.getFilteredWithExcess(service.getAll(SecurityUtil.getAuthUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, startDate, endDate, startTime, endTime);
     }
 
     public Meal get(int id) {
@@ -58,7 +54,6 @@ public class MealRestController {
     public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        meal.setUserId(SecurityUtil.getAuthUserId());
         return service.create(meal, SecurityUtil.getAuthUserId());
     }
 
@@ -70,7 +65,6 @@ public class MealRestController {
     public Meal update(Meal meal, int id) {
         log.info("update {}", meal, id);
         assureIdConsistent(meal, id);
-        meal.setUserId(SecurityUtil.getAuthUserId());
         return service.update(meal, SecurityUtil.getAuthUserId());
     }
 

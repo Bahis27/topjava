@@ -28,8 +28,8 @@ public class SpringMain {
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
             SecurityUtil.setAuthUserId(1);
             System.out.println(mealRestController.get(1));
-            //System.out.println(mealRestController.get(5));
-            System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 2), 5));
+            //System.out.println(mealRestController.get(12));
+            //System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0), 12));
         }
     }
 }

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -35,29 +34,33 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-
         String action = request.getParameter("action");
-        if (action != null && action.equals("filter")) {
-            String sStartDate = request.getParameter("startdate");
-            String sEndDate = request.getParameter("enddate");
-            String sStartTime = request.getParameter("starttime");
-            String sEndTime = request.getParameter("endtime");
-            request.setAttribute("meals", controller.getAllFiltered(sStartDate, sEndDate, sStartTime, sEndTime));
-            request.getRequestDispatcher("/meals.jsp").forward(request, response);
-        } else {
-            String id = request.getParameter("id");
-            Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                    LocalDateTime.parse(request.getParameter("dateTime")),
-                    request.getParameter("description"),
-                    Integer.parseInt(request.getParameter("calories")),
-                    SecurityUtil.getAuthUserId());
-            log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-            if (meal.isNew()) {
-                controller.create(meal);
-            } else {
-                controller.update(meal, meal.getId());
-            }
-            response.sendRedirect("meals");
+
+        switch (action == null ? "all" : action) {
+            case "filter":
+                String sStartDate = request.getParameter("startdate");
+                String sEndDate = request.getParameter("enddate");
+                String sStartTime = request.getParameter("starttime");
+                String sEndTime = request.getParameter("endtime");
+                request.setAttribute("meals", controller.getAllFiltered(sStartDate, sEndDate, sStartTime, sEndTime));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+            case "edit":
+                String id = request.getParameter("id");
+                Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                        LocalDateTime.parse(request.getParameter("dateTime")),
+                        request.getParameter("description"),
+                        Integer.parseInt(request.getParameter("calories")));
+                log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
+                if (meal.isNew()) {
+                    controller.create(meal);
+                } else {
+                    controller.update(meal, meal.getId());
+                }
+            case "all":
+            default:
+                response.sendRedirect("meals");
+                break;
         }
     }
 
@@ -83,8 +86,7 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals",
-                        MealsUtil.getWithExcess(controller.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                request.setAttribute("meals", controller.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
