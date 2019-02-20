@@ -13,9 +13,4 @@ public class DateTimeUtil {
     public static <T extends Comparable<T>> boolean isBetween(T current, T start, T end) {
         return current.compareTo(start) >= 0 && current.compareTo(end) < 0;
     }
-
-    public static <D extends Comparable<D>, T extends Comparable<T>> boolean isBetween(D currentDate, T currentTime, D startDate, D endDate, T startTime, T endTime) {
-        return currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) < 0 &&
-                currentTime.compareTo(startTime) >= 0 && currentTime.compareTo(endTime) < 0;
-    }
 }

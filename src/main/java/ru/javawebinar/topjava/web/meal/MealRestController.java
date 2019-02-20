@@ -43,7 +43,9 @@ public class MealRestController {
             endTime = LocalTime.MAX;
         if (startDate.isAfter(endDate))
             endDate = LocalDate.MAX;
-        return MealsUtil.getFilteredWithExcess(service.getAll(SecurityUtil.getAuthUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, startDate, endDate, startTime, endTime);
+
+        List<Meal> meals = MealsUtil.getFiltered(service.getAll(SecurityUtil.getAuthUserId()), startDate, endDate);
+        return MealsUtil.getFilteredWithExcess(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime);
     }
 
     public Meal get(int id) {
