@@ -48,15 +48,15 @@ public class MealServlet extends HttpServlet {
             String sStartTime = request.getParameter("starttime");
             String sEndTime = request.getParameter("endtime");
 
-            LocalDate startDate = (sStartDate.length() == 0) ? MealsUtil.getMinDate() : LocalDate.parse(sStartDate);
-            LocalDate endDate = (sEndDate.length() == 0) ? MealsUtil.getMaxDate() : LocalDate.parse(sEndDate);
-            LocalTime startTime = (sStartTime.length() == 0) ? MealsUtil.getMinTime() : LocalTime.parse(sStartTime);
-            LocalTime endTime = (sEndTime.length() == 0) ? MealsUtil.getMaxTime() : LocalTime.parse(sEndTime);
+            LocalDate startDate = (sStartDate.length() == 0) ? LocalDate.MIN : LocalDate.parse(sStartDate);
+            LocalDate endDate = (sEndDate.length() == 0) ? LocalDate.MAX : LocalDate.parse(sEndDate);
+            LocalTime startTime = (sStartTime.length() == 0) ? LocalTime.MIN : LocalTime.parse(sStartTime);
+            LocalTime endTime = (sEndTime.length() == 0) ? LocalTime.MAX : LocalTime.parse(sEndTime);
 
             if (startTime.isAfter(endTime))
                 endTime = LocalTime.MAX;
             if (startDate.isAfter(endDate))
-                endDate = LocalDate.now().plusDays(1);
+                endDate = LocalDate.MAX;
 
             log.info("getAllFiltered");
             List<MealTo> list = MealsUtil.getFilteredWithExcess(controller.getAll(SecurityUtil.getAuthUserId()),
