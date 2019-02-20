@@ -6,7 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -23,31 +28,48 @@ public class MealRestController {
         this.service = service;
     }
 
-    public List<Meal> getAll(int authUserId) {
+    public List<Meal> getAll() {
         log.info("getAll");
-        return service.getAll(authUserId);
+        return service.getAll(SecurityUtil.getAuthUserId());
     }
 
-    public Meal get(int id, int authUserId) {
-        log.info("get {}", id, authUserId);
-        return service.get(id, authUserId);
+    public List<MealTo> getAllFiltered(String sStartDate, String sEndDate, String sStartTime, String sEndTime) {
+        log.info("getAllFiltered");
+        LocalDate startDate = (sStartDate.length() == 0) ? LocalDate.MIN : LocalDate.parse(sStartDate);
+        LocalDate endDate = (sEndDate.length() == 0) ? LocalDate.MAX : LocalDate.parse(sEndDate);
+        LocalTime startTime = (sStartTime.length() == 0) ? LocalTime.MIN : LocalTime.parse(sStartTime);
+        LocalTime endTime = (sEndTime.length() == 0) ? LocalTime.MAX : LocalTime.parse(sEndTime);
+        if (startTime.isAfter(endTime))
+            endTime = LocalTime.MAX;
+        if (startDate.isAfter(endDate))
+            endDate = LocalDate.MAX;
+
+        List<MealTo> list = MealsUtil.getFilteredWithExcess(getAll(),
+                MealsUtil.DEFAULT_CALORIES_PER_DAY, startDate, endDate);
+        return MealsUtil.getFilteredWithExcess(MealsUtil.convetToMeal(list), MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime);
+
     }
 
-    public Meal create(Meal meal, int authUserId) {
-        log.info("create {}", meal, authUserId);
+    public Meal get(int id) {
+        log.info("get {}", id);
+        return service.get(id, SecurityUtil.getAuthUserId());
+    }
+
+    public Meal create(Meal meal) {
+        log.info("create {}", meal);
         checkNew(meal);
-        return service.create(meal, authUserId);
+        return service.create(meal, SecurityUtil.getAuthUserId());
     }
 
-    public boolean delete(int id, int authUserId) {
-        log.info("delete {}", id, authUserId);
-        return service.delete(id, authUserId);
+    public boolean delete(int id) {
+        log.info("delete {}", id);
+        return service.delete(id, SecurityUtil.getAuthUserId());
     }
 
-    public Meal update(Meal meal, int authUserId, int id) {
-        log.info("update {}", meal, authUserId, id);
+    public Meal update(Meal meal, int id) {
+        log.info("update {}", meal, id);
         assureIdConsistent(meal, id);
-        return service.update(meal, authUserId);
+        return service.update(meal, SecurityUtil.getAuthUserId());
     }
 
 }

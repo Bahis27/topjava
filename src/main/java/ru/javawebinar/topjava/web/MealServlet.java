@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -15,11 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
@@ -41,28 +37,12 @@ public class MealServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
-
         if (action != null && action.equals("filter")) {
             String sStartDate = request.getParameter("startdate");
             String sEndDate = request.getParameter("enddate");
             String sStartTime = request.getParameter("starttime");
             String sEndTime = request.getParameter("endtime");
-
-            LocalDate startDate = (sStartDate.length() == 0) ? LocalDate.MIN : LocalDate.parse(sStartDate);
-            LocalDate endDate = (sEndDate.length() == 0) ? LocalDate.MAX : LocalDate.parse(sEndDate);
-            LocalTime startTime = (sStartTime.length() == 0) ? LocalTime.MIN : LocalTime.parse(sStartTime);
-            LocalTime endTime = (sEndTime.length() == 0) ? LocalTime.MAX : LocalTime.parse(sEndTime);
-
-            if (startTime.isAfter(endTime))
-                endTime = LocalTime.MAX;
-            if (startDate.isAfter(endDate))
-                endDate = LocalDate.MAX;
-
-            log.info("getAllFiltered");
-            List<MealTo> list = MealsUtil.getFilteredWithExcess(controller.getAll(SecurityUtil.getAuthUserId()),
-                            MealsUtil.DEFAULT_CALORIES_PER_DAY, startDate, endDate);
-            request.setAttribute("meals", MealsUtil.getFilteredWithExcess(MealsUtil.convetToMeal(list), MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime));
-
+            request.setAttribute("meals", controller.getAllFiltered(sStartDate, sEndDate, sStartTime, sEndTime));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
         } else {
             String id = request.getParameter("id");
@@ -73,9 +53,9 @@ public class MealServlet extends HttpServlet {
                     SecurityUtil.getAuthUserId());
             log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
             if (meal.isNew()) {
-                controller.create(meal, SecurityUtil.getAuthUserId());
+                controller.create(meal);
             } else {
-                controller.update(meal, SecurityUtil.getAuthUserId(), meal.getId());
+                controller.update(meal, meal.getId());
             }
             response.sendRedirect("meals");
         }
@@ -89,14 +69,14 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 int id = getId(request);
                 log.info("Delete {}", id);
-                controller.delete(id, SecurityUtil.getAuthUserId());
+                controller.delete(id);
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.getAuthUserId()) :
-                        controller.get(getId(request), SecurityUtil.getAuthUserId());
+                        controller.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
@@ -104,7 +84,7 @@ public class MealServlet extends HttpServlet {
             default:
                 log.info("getAll");
                 request.setAttribute("meals",
-                        MealsUtil.getWithExcess(controller.getAll(SecurityUtil.getAuthUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                        MealsUtil.getWithExcess(controller.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
