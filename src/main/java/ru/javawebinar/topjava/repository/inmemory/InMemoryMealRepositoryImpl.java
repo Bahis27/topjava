@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
-    private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
+    private Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
@@ -25,13 +25,17 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     public Meal save(Meal meal, int authUserIdd) {
         if (authUserIdd != meal.getUserId())
             return null;
+
+        if (!repository.containsKey(authUserIdd))
+            repository.put(authUserIdd, new ConcurrentHashMap<>());
+
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.put(meal.getId(), meal);
+            (repository.get(authUserIdd)).put(meal.getId(), meal);
             return meal;
         }
         // treat case: update, but absent in storage
-        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return (repository.get(authUserIdd)).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
@@ -39,19 +43,18 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
         Meal meal = get(id, authUserId);
         if (meal == null)
             return false;
-        return null != repository.remove(id);
+        return null != (repository.get(authUserId)).remove(id);
     }
 
     @Override
     public Meal get(int id, int authUserId) {
-        Meal meal = repository.get(id);
+        Meal meal = (repository.get(authUserId)).get(id);
         return authUserId == meal.getUserId() ? meal : null;
     }
 
     @Override
     public List<Meal> getAll(int authUserId) {
-        return repository.values().stream()
-                .filter(meal -> meal.getUserId() == authUserId)
+        return repository.get(authUserId).values().stream()
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }

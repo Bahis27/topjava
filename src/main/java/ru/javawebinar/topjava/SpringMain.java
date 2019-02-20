@@ -5,6 +5,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
@@ -25,8 +26,10 @@ public class SpringMain {
 
             System.out.println("==================================================================================================================");
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-            //System.out.println(mealRestController.get(1));
-            //System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 1), 1));
+            SecurityUtil.setAuthUserId(1);
+            System.out.println(mealRestController.get(1));
+            //System.out.println(mealRestController.get(5));
+            System.out.println(mealRestController.update(new Meal(LocalDateTime.now(), "not exist meal", 0, 2), 5));
         }
     }
 }
