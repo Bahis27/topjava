@@ -45,16 +45,6 @@ public class JdbcMealRepositoryImpl implements MealRepository {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        log.info("+++ PostConstruct");
-    }
-
-    @PreDestroy
-    public void preDestroy() {
-        log.info("+++ PreDestroy");
-    }
-
     @Override
     public Meal save(Meal meal, int userId) {
         MapSqlParameterSource map = new MapSqlParameterSource()
