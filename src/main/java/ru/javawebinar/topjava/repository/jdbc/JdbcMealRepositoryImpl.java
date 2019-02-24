@@ -14,8 +14,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.Util;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

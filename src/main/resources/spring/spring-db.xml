@@ -22,4 +22,10 @@
     <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
+
+    <context:component-scan base-package="ru.javawebinar.**.repository.jdbc"/>
+
+    <context:component-scan base-package="ru.javawebinar.**.service"/>
+
+    <context:component-scan base-package="ru.javawebinar.**.web"/>
 </beans>

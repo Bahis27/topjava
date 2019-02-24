@@ -22,7 +22,7 @@ public class MealServiceImpl implements MealService {
 //    }
 
     @Autowired
-    public MealServiceImpl(@Qualifier("jdbcMealRepositoryImpl") MealRepository repository) {
+    public MealServiceImpl(MealRepository repository) {
         this.repository = repository;
     }
 
