@@ -14,7 +14,7 @@
     <form method="post" action="meals?action=filter">
         <dl>
             <dt>From Date:</dt>
-            <dd><input type="date" name="startDate" value="${paparam.startDate}"></dd>
+            <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
         </dl>
         <dl>
             <dt>To Date:</dt>
