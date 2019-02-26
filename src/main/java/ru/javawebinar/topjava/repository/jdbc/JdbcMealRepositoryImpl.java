@@ -3,8 +3,6 @@ package ru.javawebinar.topjava.repository.jdbc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +17,6 @@ import ru.javawebinar.topjava.util.Util;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -47,25 +44,20 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        try {
-            MapSqlParameterSource map = new MapSqlParameterSource()
-                    .addValue("id", meal.getId())
-                    .addValue("datetime", meal.getDateTime())
-                    .addValue("description", meal.getDescription())
-                    .addValue("calories", meal.getCalories())
-                    .addValue("user_id", userId);
-            if (meal.isNew()) {
-                Number newKey = insertMeal.executeAndReturnKey(map);
-                meal.setId(newKey.intValue());
-            } else if (namedParameterJdbcTemplate.update(
-                    "UPDATE meals SET datetime=:datetime, description=:description, calories=:calories WHERE id=:id AND user_id=:user_id", map) == 0) {
-                return null;
-            }
-            return meal;
-        } catch (DuplicateKeyException e) {
-            log.info("can't create meal {}, because duplicating dates and times {}", meal, meal.getDateTime());
+        MapSqlParameterSource map = new MapSqlParameterSource()
+                .addValue("id", meal.getId())
+                .addValue("datetime", meal.getDateTime())
+                .addValue("description", meal.getDescription())
+                .addValue("calories", meal.getCalories())
+                .addValue("user_id", userId);
+        if (meal.isNew()) {
+            Number newKey = insertMeal.executeAndReturnKey(map);
+            meal.setId(newKey.intValue());
+        } else if (namedParameterJdbcTemplate.update(
+                "UPDATE meals SET datetime=:datetime, description=:description, calories=:calories WHERE id=:id AND user_id=:user_id", map) == 0) {
             return null;
         }
+        return meal;
     }
 
     @Override
@@ -81,19 +73,16 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return getAllFiltered(userId, meal -> true);
+        List<Meal> meals = jdbcTemplate.query("SELECT * FROM meals WHERE user_id=? ORDER BY datetime DESC", MEAL_ROW_MAPPER, userId);
+        return meals == null ? Collections.emptyList() : meals;
     }
 
     @Override
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-        return getAllFiltered(userId, meal -> Util.isBetween(meal.getDateTime(), startDate, endDate));
-    }
-
-    private List<Meal> getAllFiltered(int userId, Predicate<Meal> filter) {
         List<Meal> meals = jdbcTemplate.query("SELECT * FROM meals WHERE user_id=? ORDER BY datetime DESC", MEAL_ROW_MAPPER, userId);
         return meals == null ? Collections.emptyList() :
                 meals.stream()
-                        .filter(filter)
+                        .filter(meal -> Util.isBetween(meal.getDateTime(), startDate, endDate))
                         .collect(Collectors.toList());
     }
 }

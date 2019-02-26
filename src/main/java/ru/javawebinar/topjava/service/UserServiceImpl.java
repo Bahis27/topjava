@@ -16,11 +16,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
-//    @Autowired
-//    public UserServiceImpl(@Qualifier("inMemoryUserRepositoryImpl") UserRepository repository) {
-//        this.repository = repository;
-//    }
-
     @Autowired
     public UserServiceImpl(UserRepository repository) {
         this.repository = repository;

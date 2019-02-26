@@ -40,12 +40,6 @@ public class MealServiceTest {
     }
 
     @Test
-    public void createMealWithSameId() {
-        service.create(MEAL05, ADMIN_ID);
-        assertMealMatch(service.getAll(ADMIN_ID), MEAL06, MEAL05, MEAL04);
-    }
-
-    @Test
     public void get() {
         Meal meal = service.get(MEAL01_ID, USER_ID);
         assertMealMatch(meal, MEAL01);
