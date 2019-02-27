@@ -79,10 +79,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 
     @Override
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-        List<Meal> meals = jdbcTemplate.query("SELECT * FROM meals WHERE user_id=? ORDER BY datetime DESC", MEAL_ROW_MAPPER, userId);
-        return meals == null ? Collections.emptyList() :
-                meals.stream()
-                        .filter(meal -> Util.isBetween(meal.getDateTime(), startDate, endDate))
-                        .collect(Collectors.toList());
+        List<Meal> meals = jdbcTemplate.query("SELECT * FROM meals WHERE user_id=? AND datetime>=? AND datetime<=? ORDER BY datetime DESC", MEAL_ROW_MAPPER, userId, startDate, endDate);
+        return meals == null ? Collections.emptyList() : meals;
     }
 }
