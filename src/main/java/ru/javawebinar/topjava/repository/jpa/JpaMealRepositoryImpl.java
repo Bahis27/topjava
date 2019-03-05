@@ -47,13 +47,10 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     @Transactional
     public boolean delete(int id, int userId) {
-        if (get(id, userId) == null) {
-            return false;
-        } else {
-         return em.createNamedQuery(Meal.DELETE)
-                 .setParameter("id", id)
-                 .executeUpdate() != 0;
-        }
+        return em.createNamedQuery(Meal.DELETE)
+                .setParameter("id", id)
+                .setParameter("userid", userId)
+                .executeUpdate() != 0;
     }
 
     @Override
