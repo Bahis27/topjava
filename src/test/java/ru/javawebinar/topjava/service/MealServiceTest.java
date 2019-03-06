@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.AssumptionViolatedException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -23,7 +22,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -119,29 +117,8 @@ public class MealServiceTest{
 
     private class MyStopWatch extends Stopwatch {
         @Override
-        protected void succeeded(long nanos, Description description) {
-            String s = String.format("Test %s was succeeded in %d nanoseconds", description.getMethodName(), nanos);
-            totalLogs.add(s);
-            log.info(s);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            String s = String.format("Test %s was failed in %d nanoseconds", description.getMethodName(), nanos);
-            totalLogs.add(s);
-            log.info(s);
-        }
-
-        @Override
-        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            String s = String.format("Test %s was skipped in %d nanoseconds", description.getMethodName(), nanos);
-            totalLogs.add(s);
-            log.info(s);
-        }
-
-        @Override
         protected void finished(long nanos, Description description) {
-            String s = String.format("Test %s was finished in %d nanoseconds", description.getMethodName(), nanos);
+            String s = String.format("\033[36m \n          Test %s was finished in %d milliseconds. \033[m", description.getMethodName(), nanos / 1000000);
             totalLogs.add(s);
             log.info(s);
         }
