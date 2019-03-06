@@ -20,8 +20,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -35,7 +34,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest{
 
-    private static List<String> totalLogs = new ArrayList<>();
+    private static StringBuffer buffer = new StringBuffer("\nRESULTS:\n===================================================================================================");
 
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
@@ -112,14 +111,15 @@ public class MealServiceTest{
 
     @AfterClass
     public static void printTotalLog() {
-        totalLogs.forEach(log::info);
+        buffer.append("\n===================================================================================================\n");
+        System.out.println(buffer.toString());
     }
 
     private class MyStopWatch extends Stopwatch {
         @Override
         protected void finished(long nanos, Description description) {
-            String s = String.format("\033[36m \n          Test %s was finished in %d milliseconds. \033[m", description.getMethodName(), nanos / 1000000);
-            totalLogs.add(s);
+            String s = String.format("\033[36m \n          Test %s was finished in %d milliseconds. \033[m", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            buffer.append(s);
             log.info(s);
         }
     }
