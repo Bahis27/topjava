@@ -15,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -40,6 +39,7 @@ public class MealServiceTest {
     private static final Logger log = getLogger("result");
 
     private static StringBuilder results = new StringBuilder();
+    private static long total = 0;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -51,6 +51,7 @@ public class MealServiceTest {
         protected void finished(long nanos, Description description) {
             String result = String.format("\n%-25s %7d", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
             results.append(result);
+            total += TimeUnit.NANOSECONDS.toMillis(nanos);
             log.info(result + " ms\n");
         }
     };
@@ -66,7 +67,8 @@ public class MealServiceTest {
                 "\nTest                 Duration, ms" +
                 "\n---------------------------------" +
                 results +
-                "\n---------------------------------");
+                "\n---------------------------------" +
+                "\nTotal, ms:                    " + total);
     }
 
     @Autowired
