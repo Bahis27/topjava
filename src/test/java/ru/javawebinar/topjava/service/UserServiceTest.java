@@ -37,7 +37,7 @@ import static ru.javawebinar.topjava.UserTestData.*;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class UserServiceTest {
+public abstract class UserServiceTest {
     private static final Logger log = getLogger("result");
 
     private static StringBuilder results = new StringBuilder();
@@ -69,6 +69,8 @@ public class UserServiceTest {
                 results +
                 "\n---------------------------------" +
                 "\nTotal, ms:                    " + total);
+        total = 0;
+        results = new StringBuilder();
     }
 
     @Autowired
