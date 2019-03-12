@@ -48,6 +48,6 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
     }
 
     public User getUserByMealId(int id) {
-        return crudMealRepository.findByMealId(id).getUser();
+        return crudMealRepository.getMeaByMealIdWithUser(id).getUser();
     }
 }

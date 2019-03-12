@@ -3,6 +3,8 @@ package ru.javawebinar.topjava;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.time.Month;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.time.LocalDateTime.of;
@@ -23,6 +25,7 @@ public class MealTestData {
     public static final Meal ADMIN_MEAL2 = new Meal(ADMIN_MEAL_ID + 1, of(2015, Month.JUNE, 1, 21, 0), "Админ ужин", 1500);
 
     public static final List<Meal> MEALS = List.of(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+    public static final List<Meal> NO_MEALS = List.of();
 
     public static Meal getCreated() {
         return new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Созданный ужин", 300);
@@ -38,6 +41,18 @@ public class MealTestData {
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
         assertMatch(actual, List.of(expected));
+    }
+
+    public static void assertMatchIgnoringOrder(List<Meal> actual, List<Meal> expected) {
+        Comparator<Meal> mealComparator = new Comparator<Meal>() {
+            @Override
+            public int compare(Meal m1, Meal m2) {
+                return m1.getDateTime().compareTo(m2.getDateTime());
+            }
+        };
+        actual.sort(mealComparator);
+        expected.sort(mealComparator);
+        assertMatch(actual, expected);
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
