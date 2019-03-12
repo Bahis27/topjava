@@ -20,7 +20,7 @@
 
     <context:component-scan base-package="ru.javawebinar.**.web"/>
 
-    <beans profile="jdbc,jpa">
+    <beans profile="jdbc,jpa,inmemory">
         <context:component-scan base-package="ru.javawebinar.**.service.others"/>
     </beans>
 

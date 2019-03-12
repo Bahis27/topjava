@@ -10,6 +10,9 @@ public class Profiles {
             POSTGRES_DB = "postgres",
             HSQL_DB = "hsqldb";
 
+    public static final String
+            IN_MEMORY = "inmemory";
+
     //  Get DB profile depending of DB driver in classpath
     public static String getActiveDbProfile() {
         try {
