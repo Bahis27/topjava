@@ -13,6 +13,9 @@ public class Profiles {
     public static final String
             IN_MEMORY = "inmemory";
 
+    public static final String
+            REPOSITORY_IMPLEMENTATION = DATAJPA;
+
     //  Get DB profile depending of DB driver in classpath
     public static String getActiveDbProfile() {
         try {

@@ -13,6 +13,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
 
+    @Override
+    @Transactional
+    Meal save(Meal meal);
+
     @Transactional
     Integer deleteByIdAndUserId(Integer id, Integer userId);
 
@@ -24,5 +28,4 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
 
     @Query("SELECT m FROM Meal m LEFT JOIN FETCH m.user WHERE m.id=:id")
     Meal getMeaByMealIdWithUser(@Param("id") int id);
-
 }

@@ -7,8 +7,8 @@
 <!--
     <bean class="ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl" id="inmemoryUserRepository"/>
 
-    <bean class="ru.javawebinar.topjava.service.others.UserServiceImpl">
-        <bean class="ru.javawebinar.topjava.service.others.UserServiceImpl">
+    <bean class="ru.javawebinar.topjava.service.UserServiceImpl">
+        <bean class="ru.javawebinar.topjava.service.UserServiceImpl">
             or
         <constructor-arg name="repository" ref="inmemoryUserRepository"/>
     </bean>
@@ -20,12 +20,6 @@
 
     <context:component-scan base-package="ru.javawebinar.**.web"/>
 
-    <beans profile="jdbc,jpa,inmemory">
-        <context:component-scan base-package="ru.javawebinar.**.service.others"/>
-    </beans>
-
-    <beans profile="datajpa">
-        <context:component-scan base-package="ru.javawebinar.**.service.datajpa"/>
-    </beans>
+    <context:component-scan base-package="ru.javawebinar.**.service"/>
 
 </beans>

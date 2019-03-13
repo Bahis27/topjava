@@ -1,9 +1,8 @@
 package ru.javawebinar.topjava.repository;
 
-import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
+        import ru.javawebinar.topjava.model.User;
 
-import java.util.List;
+        import java.util.List;
 
 public interface UserRepository {
     User save(User user);
@@ -19,7 +18,7 @@ public interface UserRepository {
 
     List<User> getAll();
 
-    default List<Meal> getAllMealsByUserId(int userId) {
+    default User getUserByIdWithAllMeals(int userId) {
         throw new UnsupportedOperationException();
     }
 }
