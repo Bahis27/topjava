@@ -28,7 +28,7 @@ public interface MealService {
 
     Meal create(Meal meal, int userId);
 
-    default Meal getMealByIdWithUser(int id) {
+    default Meal getMealByIdWithUser(int id, int userId) {
         throw new UnsupportedOperationException();
     }
 }
