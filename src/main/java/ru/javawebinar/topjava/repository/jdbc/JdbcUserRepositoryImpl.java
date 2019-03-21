@@ -4,21 +4,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepositoryImpl implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
+    private static final RowMapper<Role> ROLE_ROW_MAPPER = (rs, rowNum) -> Enum.valueOf(Role.class, rs.getString("role"));
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -49,6 +53,8 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
+        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, user.getId());
+        user.setRoles(new LinkedHashSet<>(roles));
         return user;
     }
 
@@ -59,20 +65,50 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    @Transactional
     public User get(int id) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users INNER JOIN user_roles ON (users.id = user_roles.user_id) WHERE id=?", ROW_MAPPER, id);
-        return DataAccessUtils.singleResult(users);
+        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, id);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
+        User user = DataAccessUtils.singleResult(users);
+        if (user == null) {
+            return null;
+        }
+        user.setRoles(new LinkedHashSet<>(roles));
+        return user;
     }
 
     @Override
+    @Transactional
     public User getByEmail(String email) {
-//        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        return DataAccessUtils.singleResult(users);
+        User user = DataAccessUtils.singleResult(users);
+        if (user == null) {
+            return null;
+        }
+        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, user.getId());
+        user.setRoles(new LinkedHashSet<>(roles));
+        return user;
     }
 
     @Override
+    @Transactional
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+        ResultSetExtractor<Map<Integer, List<Role>>> rse = rs -> {
+            Map<Integer, List<Role>> roles = new LinkedHashMap<>();
+            while (rs.next()) {
+                roles.merge(rs.getInt("user_id"), Collections.singletonList(Enum.valueOf(Role.class, rs.getString("role"))), (oldV, newV) -> {ArrayList<Role> list = new ArrayList<>();
+                list.addAll(oldV);
+                list.addAll(newV);
+                return list;});
+            }
+            return roles;
+        };
+        Map<Integer, List<Role>> roles = jdbcTemplate.query("SELECT * FROM user_roles", rse);
+        if (users == null || roles == null){
+            return null;
+        }
+        users.forEach(user -> user.setRoles(roles.get(user.getId())));
+        return users;
     }
 }
