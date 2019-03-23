@@ -35,7 +35,6 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
-
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
@@ -44,7 +43,6 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     @Transactional
     public User save(User user) {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
-
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
@@ -53,8 +51,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
-        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, user.getId());
-        user.setRoles(new LinkedHashSet<>(roles));
+        setRolesToUser(user, user.getId());
         return user;
     }
 
@@ -65,33 +62,28 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    @Transactional
     public User get(int id) {
-        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, id);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
         User user = DataAccessUtils.singleResult(users);
         if (user == null) {
             return null;
         }
-        user.setRoles(new LinkedHashSet<>(roles));
+        setRolesToUser(user, id);
         return user;
     }
 
     @Override
-    @Transactional
     public User getByEmail(String email) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         User user = DataAccessUtils.singleResult(users);
         if (user == null) {
             return null;
         }
-        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, user.getId());
-        user.setRoles(new LinkedHashSet<>(roles));
+        setRolesToUser(user, user.getId());
         return user;
     }
 
     @Override
-    @Transactional
     public List<User> getAll() {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
         ResultSetExtractor<Map<Integer, List<Role>>> rse = rs -> {
@@ -110,5 +102,10 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         }
         users.forEach(user -> user.setRoles(roles.get(user.getId())));
         return users;
+    }
+
+    private void setRolesToUser(User user, int id) {
+        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, id);
+        user.setRoles(new LinkedHashSet<>(roles));
     }
 }
