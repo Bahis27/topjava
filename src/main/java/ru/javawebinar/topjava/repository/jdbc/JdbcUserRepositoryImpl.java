@@ -16,6 +16,8 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 @Transactional(readOnly = true)
@@ -46,12 +48,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
+            setRolesToUser(user, user.getId());
         } else if (namedParameterJdbcTemplate.update(
                 "UPDATE users SET name=:name, email=:email, password=:password, " +
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
-        setRolesToUser(user, user.getId());
         return user;
     }
 
@@ -86,20 +88,19 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
-        ResultSetExtractor<Map<Integer, List<Role>>> rse = rs -> {
-            Map<Integer, List<Role>> roles = new LinkedHashMap<>();
+        ResultSetExtractor<Map<Integer, Set<Role>>> rse = rs -> {
+            Map<Integer, Set<Role>> roles = new LinkedHashMap<>();
             while (rs.next()) {
-                roles.merge(rs.getInt("user_id"), Collections.singletonList(Enum.valueOf(Role.class, rs.getString("role"))), (oldV, newV) -> {ArrayList<Role> list = new ArrayList<>();
-                list.addAll(oldV);
-                list.addAll(newV);
-                return list;});
+                roles.merge(rs.getInt("user_id"),
+                        Stream.of(Enum.valueOf(Role.class, rs.getString("role"))).collect(Collectors.toSet()),
+                        (oldV, newV) -> {
+                            oldV.addAll(newV);
+                            return oldV;
+                        });
             }
             return roles;
         };
-        Map<Integer, List<Role>> roles = jdbcTemplate.query("SELECT * FROM user_roles", rse);
-        if (users == null || roles == null){
-            return null;
-        }
+        Map<Integer, Set<Role>> roles = jdbcTemplate.query("SELECT * FROM user_roles", rse);
         users.forEach(user -> user.setRoles(roles.get(user.getId())));
         return users;
     }
