@@ -48,13 +48,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-            setRolesToUser(user, user.getId());
         } else if (namedParameterJdbcTemplate.update(
                 "UPDATE users SET name=:name, email=:email, password=:password, " +
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
-        return user;
+        return setRolesToUser(user, user.getId());
     }
 
     @Override
@@ -67,22 +66,14 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
         User user = DataAccessUtils.singleResult(users);
-        if (user == null) {
-            return null;
-        }
-        setRolesToUser(user, id);
-        return user;
+        return setRolesToUser(user, id);
     }
 
     @Override
     public User getByEmail(String email) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         User user = DataAccessUtils.singleResult(users);
-        if (user == null) {
-            return null;
-        }
-        setRolesToUser(user, user.getId());
-        return user;
+        return setRolesToUser(user, user.getId());
     }
 
     @Override
@@ -105,8 +96,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         return users;
     }
 
-    private void setRolesToUser(User user, int id) {
+    private User setRolesToUser(User user, int id) {
+        if (user == null) {
+            return null;
+        }
         List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id=?", ROLE_ROW_MAPPER, id);
         user.setRoles(new LinkedHashSet<>(roles));
+        return user;
     }
 }
