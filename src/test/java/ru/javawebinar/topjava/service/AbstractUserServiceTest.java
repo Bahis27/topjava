@@ -99,8 +99,9 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void changeRoles() throws Exception {
-        User update = new User(ADMIN);
-        update.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
-        assertMatch(update, ADMIN_ONLY_ROLE_ADMIN);
+        User updated = new User(ADMIN);
+        updated.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
+        service.update(updated);
+        assertMatch(service.get(ADMIN_ID), updated);
     }
 }
