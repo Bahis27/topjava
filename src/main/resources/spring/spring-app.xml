@@ -18,5 +18,14 @@
     <!-- Not necessary, already included with component-scan -->
     <!--<context:annotation-config/>-->
 
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="ru.javawebinar.topjava.service.conversion.StringToLocalDate"/>
+                <bean class="ru.javawebinar.topjava.service.conversion.StringToLocalTime"/>
+            </set>
+        </property>
+    </bean>
+
     <context:component-scan base-package="ru.javawebinar.**.service"/>
 </beans>

@@ -88,8 +88,22 @@ public class MealRestControllerTest extends AbstractControllerTest {
         List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
         List<MealTo> expected = List.of(loaded.get(1), loaded.get(4));
 
-        mockMvc.perform(get(REST_URL + "between?start=" + MEAL1.getDateTime().plusHours(1) +
-                "&end=" + MEAL6.getDateTime().minusHours(1)))
+        mockMvc.perform(get(REST_URL + "between?sd=" + (MEAL1.getDate()) +
+                "&st=" + (MEAL1.getTime().plusHours(1)) +
+                "&ed=" + (MEAL6.getDate()) +
+                "&et=" + (MEAL6.getTime().minusHours(1))))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(contentJson(expected));
+    }
+
+    @Test
+    void testGetBetweenWithNulls() throws Exception {
+        List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
+        List<MealTo> expected = List.of(loaded.get(1), loaded.get(4));
+
+        mockMvc.perform(get(REST_URL + "between?st=" + (MEAL1.getTime().plusHours(1)) +
+                "&et=" + (MEAL6.getTime().minusHours(1))))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(contentJson(expected));
