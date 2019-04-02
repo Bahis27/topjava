@@ -32,15 +32,6 @@ public class MealRestControllerTest extends AbstractControllerTest {
     private MealService mealService;
 
     @Test
-    void testGet() throws Exception {
-        mockMvc.perform(get(REST_URL + MEAL1_ID))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MEAL1));
-    }
-
-    @Test
     void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL + MEAL1_ID))
                 .andDo(print())
@@ -76,6 +67,15 @@ public class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testGet() throws Exception {
+        mockMvc.perform(get(REST_URL + MEAL1_ID))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(MEAL1));
+    }
+
+    @Test
     void testGetAll() throws Exception {
         mockMvc.perform(get(REST_URL))
                 .andExpect(status().isOk())
@@ -98,12 +98,28 @@ public class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testGetBetweenWithNulls() throws Exception {
+    void testGetBetweenWithNulDate() throws Exception {
         List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
         List<MealTo> expected = List.of(loaded.get(1), loaded.get(4));
 
-        mockMvc.perform(get(REST_URL + "between?st=" + (MEAL1.getTime().plusHours(1)) +
+        mockMvc.perform(get(REST_URL + "between?sd=" +
+                "&st=" + (MEAL1.getTime().plusHours(1)) +
+                "&ed=" +
                 "&et=" + (MEAL6.getTime().minusHours(1))))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(contentJson(expected));
+    }
+
+    @Test
+    void testGetBetweenWithNullTime() throws Exception {
+        List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
+        List<MealTo> expected = List.of(loaded.get(0), loaded.get(1), loaded.get(2));
+
+        mockMvc.perform(get(REST_URL + "between?sd=" + (MEAL6.getDate()) +
+                "&st=" +
+                "&ed=" +
+                "&et="))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(contentJson(expected));
