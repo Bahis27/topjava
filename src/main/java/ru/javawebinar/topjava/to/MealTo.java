@@ -63,12 +63,14 @@ public class MealTo {
         if (this == o) {
             return true;
         }
-
-        if (o == null || !getClass().equals(Hibernate.getClass(o))) {
+        if (o == null || !getClass().equals(o.getClass())) {
             return false;
         }
         MealTo that = (MealTo) o;
-        return id != null && id.equals(that.id);
+        return id != null && id.equals(that.id) &&
+                dateTime != null && dateTime.equals(that.dateTime) &&
+                description != null && description.equals(that.description) &&
+                calories == that.calories;
     }
 
     @Override

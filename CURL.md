@@ -7,7 +7,7 @@ curl http://localhost:8080/topjava/rest/profile/meals/
 curl http://localhost:8080/topjava/rest/profile/meals/100002
 
 `GetBetween:`<br>
-curl "http://localhost:8080/topjava/rest/profile/meals/between?startdate=2015-05-31&starttime=18:00&enddate=&endtime="
+curl "http://localhost:8080/topjava/rest/profile/meals/between?startDate=2015-05-31&startTime=18:00&endDate=&endTime="
 
 `Create:`<br>
 curl -d '{"dateTime":"2018-04-02T17:00:00","description":"VeryLightBurger","calories":1500,"user":null}' -H "Content-Type: application/json"  http://localhost:8080/topjava/rest/profile/meals/
