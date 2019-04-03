@@ -1,3 +1,5 @@
+**MealRestController:**
+
 `GetAll:`<br>
 curl http://localhost:8080/topjava/rest/profile/meals/
 
@@ -5,7 +7,7 @@ curl http://localhost:8080/topjava/rest/profile/meals/
 curl http://localhost:8080/topjava/rest/profile/meals/100002
 
 `GetBetween:`<br>
-curl "http://localhost:8080/topjava/rest/profile/meals/between?sd=2015-05-31&st=18:00&ed=&et="
+curl "http://localhost:8080/topjava/rest/profile/meals/between?startdate=2015-05-31&starttime=18:00&enddate=&endtime="
 
 `Create:`<br>
 curl -d '{"dateTime":"2018-04-02T17:00:00","description":"VeryLightBurger","calories":1500,"user":null}' -H "Content-Type: application/json"  http://localhost:8080/topjava/rest/profile/meals/
@@ -15,3 +17,39 @@ curl -H "Content-Type: application/json" -X PUT -d '{"id":100002,"dateTime":"201
 
 `Delete:`<br>
 curl -X DELETE http://localhost:8080/topjava/rest/profile/meals/100002
+
+
+
+**AdminRestController**
+
+`GetAll:`<br>
+curl http://localhost:8080/topjava/rest/admin/users/
+
+`Get:`<br>
+curl http://localhost:8080/topjava/rest/admin/users/100001
+
+`GetByEmail:`<br>
+curl "http://localhost:8080/topjava/rest/admin/users/by?email=user@yandex.ru"
+
+`Create:`<br>
+curl -d '{"name":"New2","email":"new2@yandex.ru","password":"passwordNew","roles":["ROLE_USER"]}' -H "Content-Type: application/json"  http://localhost:8080/topjava/rest/admin/users/
+
+`Update:`<br>
+curl -H "Content-Type: application/json" -X PUT -d '{"name":"UserUpdated","email":"user@yandex.ru","password":"passwordNew","roles":["ROLE_USER"]}' http://localhost:8080/topjava/rest/admin/users/100000
+
+`Delete:`<br>
+curl -X DELETE http://localhost:8080/topjava/rest/admin/users/100000
+
+
+
+**ProfileRestController:**
+
+`Get:`<br>
+curl http://localhost:8080/topjava/rest/profile
+
+`Update:`<br>
+curl -H "Content-Type: application/json" -X PUT -d '{"name":"New777","email":"new777@yandex.ru","password":"passwordNew","roles":["ROLE_USER"]}' http://localhost:8080/topjava/rest/profile
+
+`Delete:`<br>
+curl -X DELETE http://localhost:8080/topjava/rest/profile
+

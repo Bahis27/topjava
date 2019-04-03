@@ -85,41 +85,9 @@ public class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testGetBetween() throws Exception {
-        List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
-        List<MealTo> expected = List.of(loaded.get(1), loaded.get(4));
+        List<MealTo> expected = MealsUtil.getWithExcess(List.of(MEAL6), SecurityUtil.authUserCaloriesPerDay());
 
-        mockMvc.perform(get(REST_URL + "between?sd=" + (MEAL1.getDate()) +
-                "&st=" + (MEAL1.getTime().plusHours(1)) +
-                "&ed=" + (MEAL6.getDate()) +
-                "&et=" + (MEAL6.getTime().minusHours(1))))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(contentJson(expected));
-    }
-
-    @Test
-    void testGetBetweenWithNulDate() throws Exception {
-        List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
-        List<MealTo> expected = List.of(loaded.get(1), loaded.get(4));
-
-        mockMvc.perform(get(REST_URL + "between?sd=" +
-                "&st=" + (MEAL1.getTime().plusHours(1)) +
-                "&ed=" +
-                "&et=" + (MEAL6.getTime().minusHours(1))))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(contentJson(expected));
-    }
-
-    @Test
-    void testGetBetweenWithNullTime() throws Exception {
-        List<MealTo> loaded = MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay());
-        List<MealTo> expected = List.of(loaded.get(0), loaded.get(1), loaded.get(2));
-
-        mockMvc.perform(get(REST_URL + "between?sd=" + (MEAL6.getDate()) +
-                "&st=" +
-                "&ed=" +
-                "&et="))
+        mockMvc.perform(get(REST_URL + "between?startdate=2015-05-31&starttime=18:00&enddate=&endtime="))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(contentJson(expected));

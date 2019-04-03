@@ -49,7 +49,7 @@ public class MealTestData {
     }
 
     public static void assertMatch(List<MealTo> actual, List<MealTo> expected) {
-        assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     public static ResultMatcher contentJson(List<MealTo> expected) {
