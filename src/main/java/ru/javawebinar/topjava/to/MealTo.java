@@ -70,7 +70,8 @@ public class MealTo {
         return id != null && id.equals(that.id) &&
                 dateTime != null && dateTime.equals(that.dateTime) &&
                 description != null && description.equals(that.description) &&
-                calories == that.calories;
+                calories == that.calories &&
+                excess == that.excess;
     }
 
     @Override
