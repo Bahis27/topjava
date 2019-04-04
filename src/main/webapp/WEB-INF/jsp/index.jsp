@@ -19,6 +19,7 @@
         <li><a href="meals"><spring:message code="meal.title"/></a></li>
     </ul>
 </section>
+<script src="resources/alert.js"></script>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
