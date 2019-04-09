@@ -50,6 +50,22 @@ function save() {
     });
 }
 
+function setFilter() {
+    $.ajax({
+        type: "POST",
+        url: context.ajaxUrl + "filter",
+        data: $("#filtersForm").serialize()
+    }).done(function (data) {
+        context.datatableApi.clear().rows.add(data).draw();
+        successNoty("Filtered");
+    });
+}
+
+function clearFilter() {
+    updateTable();
+    successNoty("Unfiltered");
+}
+
 let failedNote;
 
 function closeNoty() {
