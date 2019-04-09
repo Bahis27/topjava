@@ -66,6 +66,17 @@ function clearFilter() {
     successNoty("Unfiltered");
 }
 
+function setEnabled(id, isEnabled) {
+    $.ajax({
+        type: "POST",
+        url: context.ajaxUrl + "enable",
+        data: 'id=' + id + '&enabled=' + !isEnabled
+    }).done(function () {
+        updateTable();
+        successNoty(isEnabled ? 'Disabled' : 'Enabled');
+    });
+}
+
 let failedNote;
 
 function closeNoty() {
