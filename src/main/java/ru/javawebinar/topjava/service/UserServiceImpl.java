@@ -1,14 +1,12 @@
 package ru.javawebinar.topjava.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -22,12 +20,6 @@ public class UserServiceImpl implements UserService {
 
     //@Autowired
     //private UserRepository repository;
-
-    @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired(required = false)
-    private JpaUtil jpaUtill;
 
     private final UserRepository repository;
 
@@ -78,15 +70,12 @@ public class UserServiceImpl implements UserService {
         return checkNotFoundWithId(repository.getWithMeals(id), id);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     @Override
     @Transactional
     public void setEnabled(int id, boolean enabled) {
         User user = get(id);
         user.setEnabled(enabled);
-        update(user);
-        cacheManager.getCache("users").clear();
-        if (jpaUtill != null) {
-            jpaUtill.clear2ndLevelHibernateCache();
-        }
+        repository.save(user);
     }
 }

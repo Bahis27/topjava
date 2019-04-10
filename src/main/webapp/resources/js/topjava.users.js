@@ -40,3 +40,15 @@ $(function () {
         }
     );
 });
+
+function setEnabled(id, isEnabled) {
+    $.ajax({
+        type: "POST",
+        url: context.ajaxUrl + "enable",
+        data: 'id=' + id + '&enabled=' + !isEnabled
+    }).done(function () {
+        // $(this).closest('tr').css(opacity, 0.5);
+        $(this).closest('tr').attr("data-userActive").val("false");
+        successNoty(isEnabled ? 'Disabled' : 'Enabled');
+    });
+}

@@ -31,3 +31,18 @@ $(function () {
         )
     });
 });
+
+function setFilter() {
+    $.ajax({
+        type: "POST",
+        url: context.ajaxUrl + "filter",
+        data: $("#filtersForm").serialize()
+    }).done(function () {
+        successNoty("Filtered");
+    });
+}
+
+function clearFilter() {
+    $('#filtersForm').find(":input").val("");
+    successNoty("Unfiltered");
+}
