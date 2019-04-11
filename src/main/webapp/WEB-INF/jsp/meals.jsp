@@ -13,7 +13,7 @@
     <form method="post" action="meals/filter">
         <dl>
             <dt><spring:message code="meal.startDate"/>:</dt>
-            <dd><input type="date" name="startDate" value="${paparam.startDate}"></dd>
+            <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.endDate"/>:</dt>
