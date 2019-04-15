@@ -26,7 +26,7 @@ public class MealRestController extends AbstractMealController {
 
     @Override
     @DeleteMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         super.delete(id);
     }
@@ -39,9 +39,9 @@ public class MealRestController extends AbstractMealController {
 
     @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void update(@RequestBody Meal meal, @PathVariable int id) {
-        super.update(meal, id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody MealTo mealTo, @PathVariable int id) {
+        super.update(mealTo, id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
