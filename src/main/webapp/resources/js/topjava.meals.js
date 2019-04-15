@@ -28,7 +28,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (data, type, row) {
                         if (type === "display") {
-                        return data.substring(0,10) + " " + data.substring(11, 19)
+                            return data.replace('T', ' ');
                         }
                         return data;
                     }
@@ -55,7 +55,10 @@ $(function () {
                     0,
                     "desc"
                 ]
-            ]
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr("data-mealExcess", !!data.excess);
+            }
         }),
         updateTable: updateFilteredTable
     });

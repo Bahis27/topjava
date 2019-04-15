@@ -17,9 +17,9 @@ public class MealTo extends BaseTo {
     @Size(min = 2, max = 100)
     private String description;
 
-    @Range(min = 10, max = 5000)
+    @Range(min = 10, max = 5000, message = "value must between 10 and 5000 calories")
     @NotNull
-    private int calories;
+    private Integer calories;
 
     @NotNull
     private boolean excess;
@@ -27,7 +27,7 @@ public class MealTo extends BaseTo {
     public MealTo() {
     }
 
-    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
+    public MealTo(Integer id, LocalDateTime dateTime, String description, Integer calories, boolean excess) {
         super(id);
         this.dateTime = dateTime;
         this.description = description;
@@ -39,16 +39,32 @@ public class MealTo extends BaseTo {
         return dateTime;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public int getCalories() {
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getCalories() {
         return calories;
+    }
+
+    public void setCalories(Integer calories) {
+        this.calories = calories;
     }
 
     public boolean isExcess() {
         return excess;
+    }
+
+    public void setExcess(boolean excess) {
+        this.excess = excess;
     }
 
     @Override
