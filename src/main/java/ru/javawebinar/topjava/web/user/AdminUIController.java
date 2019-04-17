@@ -12,7 +12,6 @@ import ru.javawebinar.topjava.web.WebUtil;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.StringJoiner;
 
 @RestController
 @RequestMapping("/ajax/admin/users")
@@ -40,8 +39,7 @@ public class AdminUIController extends AbstractUserController {
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid UserTo userTo, BindingResult result) {
         if (result.hasErrors()) {
-            StringJoiner joiner = WebUtil.getStringJoiner(result);
-            return ResponseEntity.unprocessableEntity().body(joiner.toString());
+            return WebUtil.getResponseEntity(result);
         }
         if (userTo.isNew()) {
             super.create(UserUtil.createNewFromTo(userTo));

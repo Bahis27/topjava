@@ -14,7 +14,6 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.StringJoiner;
 
 @RestController
 @RequestMapping("/ajax/profile/meals")
@@ -42,13 +41,12 @@ public class MealUIController extends AbstractMealController {
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid MealTo mealTo, BindingResult result) {
         if (result.hasErrors()) {
-            StringJoiner joiner = WebUtil.getStringJoiner(result);
-            return ResponseEntity.unprocessableEntity().body(joiner.toString());
+            return WebUtil.getResponseEntity(result);
         }
         if (mealTo.isNew()) {
             super.create(MealsUtil.createNewMealFromTo(mealTo));
         } else {
-            super.update(mealTo, mealTo.getId());
+            super.update(MealsUtil.convertMealToToMeal(mealTo), mealTo.getId());
         }
         return ResponseEntity.ok().build();
     }

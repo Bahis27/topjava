@@ -1,13 +1,14 @@
 package ru.javawebinar.topjava.web;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
 import java.util.StringJoiner;
 
 public class WebUtil {
 
-    public static StringJoiner getStringJoiner(BindingResult result) {
-        StringJoiner joiner = new StringJoiner("<br>");
+    public static ResponseEntity<String> getResponseEntity(BindingResult result) {
+        StringJoiner joiner = new StringJoiner(", ");
         result.getFieldErrors().forEach(
                 fe -> {
                     String msg = fe.getDefaultMessage();
@@ -18,6 +19,6 @@ public class WebUtil {
                         joiner.add(msg);
                     }
                 });
-        return joiner;
+        return ResponseEntity.unprocessableEntity().body(joiner.toString());
     }
 }
