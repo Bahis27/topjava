@@ -8,7 +8,7 @@ import java.util.StringJoiner;
 public class WebUtil {
 
     public static ResponseEntity<String> getResponseEntity(BindingResult result) {
-        StringJoiner joiner = new StringJoiner(", ");
+        StringJoiner joiner = new StringJoiner("<br>");
         result.getFieldErrors().forEach(
                 fe -> {
                     String msg = fe.getDefaultMessage();

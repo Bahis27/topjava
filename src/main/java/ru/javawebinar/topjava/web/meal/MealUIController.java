@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.to.MealToFromOutside;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.WebUtil;
 
@@ -39,14 +40,15 @@ public class MealUIController extends AbstractMealController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createOrUpdate(@Valid MealTo mealTo, BindingResult result) {
+    public ResponseEntity<String> createOrUpdate(@Valid MealToFromOutside mealTo, BindingResult result) {
         if (result.hasErrors()) {
             return WebUtil.getResponseEntity(result);
         }
+        Meal meal = MealsUtil.convertMealToFromOutsideToMeal(mealTo);
         if (mealTo.isNew()) {
-            super.create(MealsUtil.createNewMealFromTo(mealTo));
+            super.create(meal);
         } else {
-            super.update(MealsUtil.convertMealToToMeal(mealTo), mealTo.getId());
+            super.update(meal, meal.getId());
         }
         return ResponseEntity.ok().build();
     }
