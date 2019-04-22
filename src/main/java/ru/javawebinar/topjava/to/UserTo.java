@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.to;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 import ru.javawebinar.topjava.util.UserUtil;
 
@@ -21,7 +22,9 @@ public class UserTo extends BaseTo implements Serializable {
     @Size(max = 100)
     private String email;
 
-    @Size(min = 5, max = 32, message = "length must between 5 and 32 characters")
+    @NotBlank
+    @Size(min = 5, max = 100, message = "length must between 5 and 100 characters")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Range(min = 10, max = 10000)
