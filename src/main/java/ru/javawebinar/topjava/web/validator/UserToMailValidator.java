@@ -26,7 +26,7 @@ public class UserToMailValidator implements Validator {
 
         User existing = repository.getByEmail(userTo.getEmail());
         if (existing != null) {
-            errors.rejectValue("email", "User with this email already exists");
+            errors.rejectValue("email", "valid.user.emailExist");
         }
     }
 }
