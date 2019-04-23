@@ -19,6 +19,10 @@ public class EmailDoublesValidator implements ConstraintValidator<EmailNotExist,
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
 //        return email != null && (email.length() > 0) && service.getByEmail(email) == null;
-        return repository.getByEmail(email) == null;
+        try {
+            return repository.getByEmail(email) == null;
+        } catch (NullPointerException e) {
+            return true;
+        }
     }
 }
