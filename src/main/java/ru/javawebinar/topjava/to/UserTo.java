@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.to;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
+import ru.javawebinar.topjava.annotation.EmailNotExist;
 import ru.javawebinar.topjava.util.UserUtil;
 
 import javax.validation.constraints.Email;
@@ -20,6 +21,7 @@ public class UserTo extends BaseTo implements Serializable {
     @Email
     @NotBlank
     @Size(max = 100)
+    @EmailNotExist
     private String email;
 
     @NotBlank
