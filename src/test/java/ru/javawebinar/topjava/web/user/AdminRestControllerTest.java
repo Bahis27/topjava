@@ -7,8 +7,11 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+
+import javax.persistence.PersistenceException;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -109,6 +112,19 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testUpdateExistingData() throws Exception {
+        assertThrows(PersistenceException.class, () -> {
+            User updated = new User(USER);
+            updated.setEmail(ADMIN.getEmail());
+            mockMvc.perform(put(REST_URL + USER_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(userHttpBasic(ADMIN))
+                    .content(jsonWithPassword(updated, updated.getPassword())));
+            entityManager.flush();
+        });
+    }
+
+    @Test
     void testCreate() throws Exception {
         User expected = new User(null, "New", "new@gmail.com", "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
         ResultActions action = mockMvc.perform(post(REST_URL)
@@ -135,7 +151,18 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
         ErrorInfo info = readFromJson(action, ErrorInfo.class);
         assertTrue(info.getDetail().contains("size must be between 2 and 100"));
+    }
 
+    @Test
+    void testCreateExistingData() throws Exception {
+        assertThrows(PersistenceException.class, () -> {
+            User expected = new User(null, "New", "user@yandex.ru", "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+            mockMvc.perform(post(REST_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(userHttpBasic(ADMIN))
+                    .content(jsonWithPassword(expected, "newPass")));
+            entityManager.flush();
+        });
     }
 
     @Test

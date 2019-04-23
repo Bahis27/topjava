@@ -3,14 +3,21 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,6 +38,9 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     private MealService service;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
     void testGet() throws Exception {
@@ -85,7 +95,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testUpdateNotValidData() throws  Exception {
+    void testUpdateNotValidData() throws Exception {
         Meal updated = getUpdated();
         updated.setCalories(null);
         ResultActions action = mockMvc.perform(put(REST_URL + MEAL1_ID)
@@ -97,6 +107,19 @@ class MealRestControllerTest extends AbstractControllerTest {
 
         ErrorInfo info = readFromJson(action, ErrorInfo.class);
         assertTrue(info.getDetail().contains("NotNull.calories"));
+    }
+
+    @Test
+    void testUpdateExistingData() throws Exception {
+        assertThrows(PersistenceException.class, () -> {
+            Meal updated = getUpdated();
+            updated.setDateTime(MEAL2.getDateTime());
+            mockMvc.perform(put(REST_URL + MEAL1_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(updated))
+                    .with(userHttpBasic(USER)));
+            entityManager.flush();
+        });
     }
 
     @Test
@@ -127,6 +150,20 @@ class MealRestControllerTest extends AbstractControllerTest {
 
         ErrorInfo info = readFromJson(action, ErrorInfo.class);
         assertTrue(info.getDetail().contains("NotBlank.description"));
+    }
+
+    @Test
+    @Transactional
+    void testCreateExistingData() throws Exception {
+        assertThrows(PersistenceException.class, () -> {
+            Meal created = getCreated();
+            created.setDateTime(MEAL1.getDateTime());
+            mockMvc.perform(post(REST_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(created))
+                    .with(userHttpBasic(USER)));
+            entityManager.flush();
+        });
     }
 
     @Test
