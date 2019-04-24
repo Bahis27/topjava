@@ -3,12 +3,16 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -75,6 +79,20 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testRegisterExistingData() throws Exception {
+        UserTo createdTo = new UserTo(null, "newName", "user@yandex.ru", "newPassword", 1500);
+
+        ResultActions action = mockMvc.perform(post(REST_URL + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(createdTo, createdTo.getPassword())))
+                .andExpect(status().isConflict());
+
+        ErrorInfo error = readFromJson(action, ErrorInfo.class);
+        assertEquals(error.getType(), ErrorType.DATA_ERROR);
+    }
+
+    @Test
     void testUpdate() throws Exception {
         UserTo updatedTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 1500);
 
@@ -99,5 +117,20 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
         ErrorInfo info = readFromJson(action, ErrorInfo.class);
         assertTrue(info.getDetail().contains("must be between 10 and 10000"));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testUpdateExistingData() throws Exception {
+        UserTo updatedTo = new UserTo(ADMIN_ID, "newName", "user@yandex.ru", "newPassword", 1500);
+
+        ResultActions action = mockMvc.perform(put(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(updatedTo, updatedTo.getPassword())))
+                .andExpect(status().isConflict());
+
+        ErrorInfo error = readFromJson(action, ErrorInfo.class);
+        assertEquals(error.getType(), ErrorType.DATA_ERROR);
     }
 }
